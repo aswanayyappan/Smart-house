@@ -7,16 +7,25 @@ const path = require('path');
 // 1. FIREBASE INITIALIZATION
 // ==========================================
 let serviceAccount;
-try {
-  serviceAccount = require('./smart-house-college-project-firebase-adminsdk-fbsvc-1e7f1f24b5.json');
-} catch (error) {
-  console.error("=========================================================");
-  console.error("ERROR: serviceAccountKey.json not found!");
-  console.error("Please download your Service Account Key from Firebase");
-  console.error("Project Settings -> Service Accounts -> Generate New Private Key");
-  console.error("Place it in the 'backend' folder and rename to serviceAccountKey.json");
-  console.error("=========================================================");
-  process.exit(1);
+
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+  // Use Render Environment Variable if available
+  try {
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+  } catch (err) {
+    console.error("ERROR parsing FIREBASE_SERVICE_ACCOUNT environment variable.");
+    process.exit(1);
+  }
+} else {
+  // Fallback to local file for local development
+  try {
+    serviceAccount = require('./smart-house-college-project-firebase-adminsdk-fbsvc-1e7f1f24b5.json');
+  } catch (error) {
+    console.error("=========================================================");
+    console.error("ERROR: Local service account JSON not found!");
+    console.error("=========================================================");
+    process.exit(1);
+  }
 }
 
 // NOTE: You must update this URL to match your project's Database URL
